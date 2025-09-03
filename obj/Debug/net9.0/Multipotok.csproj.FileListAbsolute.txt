@@ -1,0 +1,14 @@
+/home/michael/Documents/Project/Multipotok/bin/Debug/net9.0/Multipotok
+/home/michael/Documents/Project/Multipotok/bin/Debug/net9.0/Multipotok.deps.json
+/home/michael/Documents/Project/Multipotok/bin/Debug/net9.0/Multipotok.runtimeconfig.json
+/home/michael/Documents/Project/Multipotok/bin/Debug/net9.0/Multipotok.dll
+/home/michael/Documents/Project/Multipotok/bin/Debug/net9.0/Multipotok.pdb
+/home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/Multipotok.GeneratedMSBuildEditorConfig.editorconfig
+/home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/Multipotok.AssemblyInfoInputs.cache
+/home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/Multipotok.AssemblyInfo.cs
+/home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/Multipotok.csproj.CoreCompileInputs.cache
+/home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/Multipotok.dll
+/home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/refint/Multipotok.dll
+/home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/Multipotok.pdb
+/home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/Multipotok.genruntimeconfig.cache
+/home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/ref/Multipotok.dll
