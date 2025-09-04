@@ -35,7 +35,7 @@ class Program
         var program = new Program();
 
         var todoItems = new List<TodoItem>{
-    new SimpleTask("Нарисовать обложку", "Ч/б череп + молния")
+    new SimpleTask(1,"Нарисовать обложку", "Ч/б череп + молния")
     {
         Id = 1,
         PriorityStatus = Priority.High,
@@ -60,7 +60,7 @@ class Program
         IsCompleted = false
     },
 
-    new SimpleTask("Купить струны", "Комплект 10–46")
+    new SimpleTask(2,"Купить струны", "Комплект 10–46")
     {
         Id = 4,
         PriorityStatus = Priority.Light,

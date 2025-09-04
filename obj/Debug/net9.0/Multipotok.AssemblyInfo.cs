@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Multipotok")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+810d2a259770270832aebd658d4282f111a5d519")]
 [assembly: System.Reflection.AssemblyProductAttribute("Multipotok")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Multipotok")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

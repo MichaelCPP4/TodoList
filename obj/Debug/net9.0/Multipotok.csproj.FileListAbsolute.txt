@@ -12,3 +12,4 @@
 /home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/Multipotok.pdb
 /home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/Multipotok.genruntimeconfig.cache
 /home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/ref/Multipotok.dll
+/home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/Multipotok.sourcelink.json

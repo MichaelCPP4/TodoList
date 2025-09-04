@@ -1,5 +1,7 @@
 using System.ComponentModel;
+using System.Data.Common;
 using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
 
 namespace TodoRepository
 {
@@ -15,12 +17,12 @@ namespace TodoRepository
 
     interface IPrioritizable
     {
-        public Priority PriorityStatus{get;set;}
+        public Priority PriorityStatus { get; set; }
     }
 
     interface IEditTask
     {
-        public void Edit();
+        public void Edit(string title, string description, DayOfWeek? day = null, DateTime? dateTime = null);
     }
 
     interface INotifiable
@@ -31,23 +33,23 @@ namespace TodoRepository
     public abstract class TodoItem : IPrioritizable, IEditTask
     {
 
-        ~TodoItem(){}
+        ~TodoItem() { }
 
         public event Action OnTaskCompleted;
 
         //private int id;
-        public int Id{get;set;}
+        public int Id { get; set; }
 
         //private string title;
-        public string Title{get;set;}
+        public string Title { get; set; }
 
         //private string description;
-        public string Description{get;set;}
+        public string Description { get; set; }
 
-        public Priority PriorityStatus{get;set;}
+        public Priority PriorityStatus { get; set; }= Priority.Middle;
 
         //private bool isCompleted = false;
-        public bool IsCompleted{get;set;}
+        public bool IsCompleted { get; set; }
 
         public abstract void Display();
 
@@ -57,16 +59,12 @@ namespace TodoRepository
             OnTaskCompleted?.Invoke();
         }
 
-        public virtual void Edit(string title, string description)
-        {
-            Title = title;
-            Description = description;
-        }
+        public abstract void Edit(string title, string description, DayOfWeek? day = null, DateTime? dateTime = null);
     }
 
     class SimpleTask : TodoItem
     {
-        public SimpleTask(){Title = "Дельце";}
+        public SimpleTask() { Title = "Дельце"; }
 
         public SimpleTask(int id, string title, string description)
         {
@@ -77,22 +75,35 @@ namespace TodoRepository
 
         public override void Display()
         {
-            Console.WriteLine($"Обычная задача. {Title}\nОписание:\n{Description}");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Обычная задача");
+            Console.ResetColor();
+            Console.WriteLine($"№{Id}\nНазвание: {Title}\nОписание:\n{Description}");
         }
-        
+
+        public override void Edit(string title, string description, DayOfWeek? day = null, DateTime? dateTime = null)
+        {
+            Title = title;
+            Description = description;
+        }
+
     }
 
     class RecurringTask : SimpleTask, INotifiable
     {
         public override void Display()
         {
-            base.Display();
-            Console.WriteLine($"Задача повторяется каждый {day}");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"Регулярная задача каждый {day}");
+            Console.ResetColor();
+            Console.WriteLine($"№{Id}\nНазвание: {Title}\nПриоритет: {PriorityStatus}\nОписание:\n{Description}");
+
+            //Console.WriteLine($"Задача повторяется каждый {day}");
         }
 
         public void Reloadtask()
         {
-            if(day >= DateTime.Now.DayOfWeek)
+            if (day >= DateTime.Now.DayOfWeek)
                 IsCompleted = false;
         }
 
@@ -102,20 +113,22 @@ namespace TodoRepository
         }
 
         private DayOfWeek day;
-        internal DayOfWeek Day{get{return day;}set{day = value;}}
+        internal DayOfWeek Day { get { return day; } set { day = value; } }
 
-        public virtual void Edit(string title, string description, DayOfWeek day)
+        public override void Edit(string title, string description, DayOfWeek? day = null, DateTime? dateTime = null)
         {
             Title = title;
             Description = description;
-            this.day = day;
+            if (day.HasValue)
+                this.day = (DayOfWeek)day;
+            else Console.WriteLine("Ошибка: Некорректная дата!");
         }
     }
 
 
     class TimedTask : TodoItem, INotifiable
     {
-        public TimedTask(DateTime dateTime){ Title = "Срочное"; this.dateTime = dateTime;}
+        public TimedTask(DateTime dateTime) { Title = "Срочное"; this.dateTime = dateTime; }
 
         public TimedTask(string title, string description)
         {
@@ -130,15 +143,20 @@ namespace TodoRepository
 
         public override void Display()
         {
-            Console.WriteLine($"Задача с дедлайном! {Title}\nОписание:\n{Description}");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Дедлайн - {DeadLine}");
+            Console.ResetColor();
+            Console.WriteLine($"№{Id}\nНазвание: {Title}\nПриоритет: {PriorityStatus}\nОписание:\n{Description}");
+
+            //Console.WriteLine($"Задача с дедлайном! {Title}\nОписание:\n{Description}");
         }
 
         public DateTime DeadLine
         {
-            get =>dateTime;
+            get => dateTime;
             set
             {
-                if(value.Year >= 0) dateTime = value;
+                if (value.Year >= 0) dateTime = value;
                 else Console.WriteLine("Ошибка: дата не назначена!");
             }
         }
@@ -146,17 +164,18 @@ namespace TodoRepository
         public override void MarkAsDone()
         {
             base.MarkAsDone();
-            if(DateTime.Now < dateTime)
+            if (DateTime.Now < dateTime)
                 Console.WriteLine("Задача выполнена вовремя, молодец!");
             else
                 Console.WriteLine("Просрал дедлайн, бро..");
         }
 
-        public virtual void Edit(string title, string description, DateTime dateTime)
+        public override void Edit(string title, string description, DayOfWeek? day = null, DateTime? dateTime = null)
         {
             Title = title;
             Description = description;
-            this.dateTime = dateTime;
+            if (dateTime.HasValue)
+                this.dateTime = (DateTime)dateTime;
         }
 
 
@@ -180,7 +199,100 @@ namespace TodoRepository
             todoItems.Add(new SimpleTask(id, title, description));
         }
 
-        public void EditSimpleTask()
+        public void RemoveTask(TodoItem task)
+        {
+            foreach (var item in todoItems)
+            {
+                if (task.Id == item.Id)
+                {
+                    todoItems.Remove(item);
+                }
+            }
+        }
+
+        public void RemoveTask(int idTask)
+        {
+            foreach (var item in todoItems)
+            {
+                if (idTask == item.Id)
+                {
+                    todoItems.Remove(item);
+                }
+            }
+        }
+
+        public List<TodoItem> FindTaskByName(string name)
+        {
+            return todoItems.FindAll(x => x.Title.Contains(name)).ToList();
+        }
+
+        public List<TodoItem> FilterByPriority(Priority priority)
+        {
+            return todoItems.FindAll(x => x.PriorityStatus == priority).ToList();
+        }
+
+        public List<TodoItem> OrderByPriority()
+        {
+            return todoItems.OrderBy(x => x.PriorityStatus).ToList();
+        }
+
+        public List<TodoItem> OrderByDescendingPriority()
+        {
+            return todoItems.OrderByDescending(x => x.PriorityStatus).ToList();
+        }
+
+        public void Dysplay(List<TodoItem> todoItemResult)
+        {
+            Console.WriteLine("----------\nЗаметки :D\n----------");
+            Console.WriteLine("Задачи:");
+            foreach (var item in todoItemResult)
+            {
+                item.Display();
+            }
+            Console.WriteLine("------------------------");
+            // if(isCreate && isRemove && isEdit)
+            // {
+            //     Console.WriteLine($"Выбрать задачу(Id) | Добавить задачу(a) | Удалить задачу (r) | Выйти из программы: Ctrl+C");
+            //     string input = AskString(Console.ReadLine());
+            //     InputTask(input);
+            // }
+            
+            // if()
+            // {
+                
+            // }
+
+        }
+
+        private void InputTask()
+        {
+            if(isCreate && isRemove && isEdit)
+            {
+                Console.WriteLine($"Редактировать задачу(Id) | Добавить задачу(a) | Удалить задачу (r) | Выйти из программы: Ctrl+C");
+                string input = AskString(Console.ReadLine());
+
+                if (int.TryParse(input, out int id))
+                {
+                    todoItems.FindLast(x => x.Id == id).Edit();
+                }
+                else
+                {
+                // Обработка команд типа 'a', 'r'
+                switch (input)
+                {
+                    case "a": AddTask(); break;
+                    case "r": RemoveTask(); break;
+                    default: Console.WriteLine("Неизвестная команда"); break;
+                }
+}
+            }
+            
+            if()
+            {
+                
+            }
+            return
+        }
 
         private string AskString(string message)
         {
@@ -196,7 +308,7 @@ namespace TodoRepository
             } while (string.IsNullOrWhiteSpace(input));
 
             return input;
-        } 
+        }
 
         private int GenerateIdTask()
         {
@@ -204,12 +316,16 @@ namespace TodoRepository
 
             foreach (var task in todoItems)
             {
-                if(task.Id == freeId) freeId++;
+                if (task.Id == freeId) freeId++;
                 else break;
             }
 
             return freeId;
         }
+
+        private bool isEdit = false;
+        private bool isCreate = false;
+        private bool isRemove = false;
     }
 
 
