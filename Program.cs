@@ -26,6 +26,18 @@ class Program
         return listTask;
     }
 
+    
+
+
+
+
+
+
+
+
+
+
+
 
     public static void Main()
     {   
@@ -35,14 +47,14 @@ class Program
         var program = new Program();
 
         var todoItems = new List<TodoItem>{
-    new SimpleTask(1,"Нарисовать обложку", "Ч/б череп + молния")
+    new SimpleTask(1,"Нарисовать обложку", "Ч/б череп + молния", Priority.Light)
     {
         Id = 1,
         PriorityStatus = Priority.High,
         IsCompleted = false
     },
 
-    new TimedTask("Сдать демку", "Отправить трек на лейбл")
+    new TimedTask(3,"Сдать демку", "Отправить трек на лейбл", Priority.Light)
     {
         Id = 2,
         PriorityStatus = Priority.VeryHight, // использую твоё название enum
