@@ -35,21 +35,21 @@ namespace TodoRepository
     {
         public static DateTime AskDate()
 {
-    DateTime date;
-    while (true)
-    {
-        //Console.Write(message);
-        string input = Console.ReadLine();
+        DateTime date;
+        while (true)
+        {
+            //Console.Write(message);
+            string input = Console.ReadLine();
 
-        if (DateTime.TryParse(input, out date))
-        {
-            return date; // всё ок, возвращаем дату
+            if (DateTime.TryParse(input, out date))
+            {
+                return date; // всё ок, возвращаем дату
+            }
+            else
+            {
+                Console.WriteLine("Неверный формат даты! Попробуй снова (например: 01.11.2025).");
+            }
         }
-        else
-        {
-            Console.WriteLine("Неверный формат даты! Попробуй снова (например: 01.11.2025).");
-        }
-    }
 }
 
         public static string AskString()
@@ -73,7 +73,7 @@ namespace TodoRepository
 
             while(true)
             {
-                if(int.TryParse(message, out int id) && id > 0 && id <= maxNumber)
+                if(int.TryParse(Console.ReadLine(), out int id) && id > 0 && id <= maxNumber)
                     return id;
                 else
                     Console.WriteLine(message);
@@ -158,6 +158,7 @@ namespace TodoRepository
             Console.WriteLine("Введите название: ");
             Title = FunctionInput.AskString();
             Console.WriteLine("Выберите приоритет (1-4): ");
+            Console.WriteLine("1) Низкий\n2) Обычный\n3) Высокий\n4) Очень высокий");
             PriorityStatus = FunctionInput.PrioritySwitcher(FunctionInput.AskNumber("Попробуйте ещё раз!", 4));
             Console.WriteLine("Введите описание: ");
             Description = FunctionInput.AskString();
@@ -224,6 +225,7 @@ namespace TodoRepository
         {
             base.Edit();
             Console.WriteLine("Выберите день недели (1-7): ");
+            Console.WriteLine("1) Понедельник\n2) Вторник\n3) Среда\n4) Четверг\n5) Пятница\n6) Суббота\n7) Воскресенье");
             Day = FunctionInput.DaySwitcher(FunctionInput.AskNumber("Попробуй ещё раз!", 7));
         }
     }
@@ -297,6 +299,7 @@ namespace TodoRepository
             Console.WriteLine("Введите описание:");
             string description = FunctionInput.AskString();
             Console.WriteLine("Выберите приоритет: ");
+            Console.WriteLine("1) Низкий\n2) Обычный\n3) Высокий\n4) Очень высокий");
             Priority priority = FunctionInput.PrioritySwitcher(FunctionInput.AskNumber("Попробуй ещё раз!", 4));
             todoItems.Add(new SimpleTask(id, title, description, priority));
         }
@@ -309,6 +312,7 @@ namespace TodoRepository
             Console.WriteLine("Введите описание:");
             string description = FunctionInput.AskString();
             Console.WriteLine("Выберите приоритет: ");
+            Console.WriteLine("1) Низкий\n2) Обычный\n3) Высокий\n4) Очень высокий");
             Priority priority = FunctionInput.PrioritySwitcher(FunctionInput.AskNumber("Попробуй ещё раз!", 4));
             Console.WriteLine("Введите дату дедлайна: ");
             DateTime dateTime = FunctionInput.AskDate();
@@ -323,8 +327,10 @@ namespace TodoRepository
             Console.WriteLine("Введите описание:");
             string description = FunctionInput.AskString();
             Console.WriteLine("Выберите приоритет: ");
+            Console.WriteLine("1) Низкий\n2) Обычный\n3) Высокий\n4) Очень высокий");
             Priority priority = FunctionInput.PrioritySwitcher(FunctionInput.AskNumber("Попробуй ещё раз!", 4));
             Console.WriteLine("Введите день недели для повторения задачи: ");
+            Console.WriteLine("1) Понедельник\n2) Вторник\n3) Среда\n4) Четверг\n5) Пятница\n6) Суббота\n7) Воскресенье");
             DayOfWeek day = FunctionInput.DaySwitcher(FunctionInput.AskNumber("Попробуй ещё раз!", 7));
             todoItems.Add(new RecurringTask(id, title, description, priority, day));
         }
@@ -336,8 +342,11 @@ namespace TodoRepository
                 if (task.Id == item.Id)
                 {
                     todoItems.Remove(item);
+                    Console.WriteLine("Задача удалена!");
+                    return;
                 }
             }
+            Console.WriteLine("Ошибка: Задачи с таким номером не существует!");
         }
 
         public void RemoveTask(int idTask)
@@ -373,7 +382,7 @@ namespace TodoRepository
 
         private int GenerateIdTask()
         {
-            int freeId = 0;
+            int freeId = 1;
 
             foreach (var task in todoItems)
             {
@@ -386,7 +395,7 @@ namespace TodoRepository
 
         public List<TodoItem> todoItems;
 
-        TodoList()
+        public TodoList()
         {
             todoItems = new List<TodoItem>();
         }

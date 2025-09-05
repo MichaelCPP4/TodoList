@@ -4,6 +4,16 @@ namespace InputRepository
 { 
     public static class DisplayOperation
     {
+        public static void Run(TodoList todoList)
+        {
+            while (true)
+            {
+                Console.Clear();
+                Dysplay(todoList.todoItems);
+                InputTask(todoList);
+            }
+        }
+
         public static void Dysplay(List<TodoItem> todoItemResult)
         {
             Console.WriteLine("----------\nЗаметки :D\n----------");
@@ -29,6 +39,7 @@ namespace InputRepository
                     {
                         todoList.todoItems.FindLast(x => x.Id == id).Edit();
                     }
+                    else Console.WriteLine("Ошибка: Задачи с таким номером не существует!");
                 }
                 else
                 {
@@ -53,10 +64,11 @@ namespace InputRepository
                         }
                     break;
                     case "r":
-                        Console.WriteLine("Выберите № задачи для удаления: ");
+                        Console.WriteLine("Выберите номер задачи для удаления: ");
                         int maxIndex = todoList.todoItems.OrderByDescending(x => x.Id).First().Id;
-                        todoList.RemoveTask(todoList.todoItems.FindLast(x => x.Id == FunctionInput.AskNumber("Попробуйте ещё раз!", maxIndex)));
-                    break;
+                        int idTask = FunctionInput.AskNumber("Попробуйте ещё раз!", maxIndex);
+                        todoList.RemoveTask(todoList.todoItems.FindLast(x => x.Id == idTask));
+                        return;
                     default: Console.WriteLine("Неизвестная команда"); break;
                 }
 }
