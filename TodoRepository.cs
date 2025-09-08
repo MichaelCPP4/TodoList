@@ -3,10 +3,10 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.VisualBasic;
 
 namespace TodoRepository
 {
-
     public enum Priority
     {
         Light,
@@ -23,7 +23,7 @@ namespace TodoRepository
 
     interface IEditTask
     {
-        public void Edit();
+        public Task Edit();
     }
 
     interface INotifiable
@@ -32,9 +32,20 @@ namespace TodoRepository
     }
     
     public static class FunctionInput
-    {
+    {   
+
+        public static async Task SaveTasksAsync()
+        {
+            await Task.Delay(1000);
+        }
+
+        public static async Task LoadTaskAsync()
+        {
+            await Task.Delay(1000);
+        }
+
         public static DateTime AskDate()
-{
+        {       
         DateTime date;
         while (true)
         {
@@ -145,7 +156,7 @@ namespace TodoRepository
         //private bool isCompleted = false;
         public bool IsCompleted { get; set; }
 
-        public abstract void Display();
+        public abstract Task Display();
 
         public virtual void MarkAsDone()
         {
@@ -153,8 +164,9 @@ namespace TodoRepository
             OnTaskCompleted?.Invoke();
         }
 
-        public virtual void Edit()
+        public virtual async Task Edit()
         {
+            await FunctionInput.SaveTasksAsync();
             Console.WriteLine("Введите название: ");
             Title = FunctionInput.AskString();
             Console.WriteLine("Выберите приоритет (1-4): ");
@@ -177,8 +189,9 @@ namespace TodoRepository
             PriorityStatus = priority;
         }
 
-        public override void Display()
+        public override async Task Display()
         {
+            await FunctionInput.LoadTaskAsync();
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Обычная задача");
             Console.ResetColor();
@@ -188,14 +201,13 @@ namespace TodoRepository
 
     class RecurringTask : SimpleTask, INotifiable
     {
-        public override void Display()
+        public override async Task Display()
         {
+            await FunctionInput.LoadTaskAsync();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"Регулярная задача каждый {day}");
             Console.ResetColor();
             Console.WriteLine($"№{Id}\nНазвание: {Title}\nПриоритет: {PriorityStatus}\nОписание:\n{Description}");
-
-            //Console.WriteLine($"Задача повторяется каждый {day}");
         }
 
         public RecurringTask(int id, string title, string description, Priority priority, DayOfWeek day)
@@ -221,8 +233,9 @@ namespace TodoRepository
         private DayOfWeek day;
         internal DayOfWeek Day { get { return day; } set { day = value; } }
 
-        public override void Edit()
+        public override async Task Edit()
         {
+            await FunctionInput.SaveTasksAsync();
             base.Edit();
             Console.WriteLine("Выберите день недели (1-7): ");
             Console.WriteLine("1) Понедельник\n2) Вторник\n3) Среда\n4) Четверг\n5) Пятница\n6) Суббота\n7) Воскресенье");
@@ -249,14 +262,13 @@ namespace TodoRepository
             Console.WriteLine($"Напоминание: задача {Title}\nСрок до {dateTime}.");
         }
 
-        public override void Display()
+        public override async Task Display()
         {
+            await FunctionInput.LoadTaskAsync();
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Дедлайн - {DeadLine}");
             Console.ResetColor();
             Console.WriteLine($"№{Id}\nНазвание: {Title}\nПриоритет: {PriorityStatus}\nОписание:\n{Description}");
-
-            //Console.WriteLine($"Задача с дедлайном! {Title}\nОписание:\n{Description}");
         }
 
         public DateTime DeadLine
@@ -278,8 +290,9 @@ namespace TodoRepository
                 Console.WriteLine("Просрал дедлайн, бро..");
         }
 
-        public override void Edit()
+        public override async Task Edit()
         {
+            await FunctionInput.SaveTasksAsync();
             base.Edit();
             Console.WriteLine("Введите дату дедлайна: ");
             dateTime = FunctionInput.AskDate();
@@ -380,6 +393,32 @@ namespace TodoRepository
             return todoItems.OrderByDescending(x => x.PriorityStatus).ToList();
         }
 
+
+
+
+
+        public List<TodoItem> Filter(Func<TodoItem, bool> condition)
+        {
+            return todoItems.Where(condition).ToList();
+        }
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         private int GenerateIdTask()
         {
             int freeId = 1;
@@ -400,8 +439,6 @@ namespace TodoRepository
             todoItems = new List<TodoItem>();
         }
     }
-
-
 }
 
 

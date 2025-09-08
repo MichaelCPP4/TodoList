@@ -4,32 +4,32 @@ namespace InputRepository
 { 
     public static class DisplayOperation
     {
-        public static void Run(TodoList todoList)
+        public static async Task Run(TodoList todoList)
         {
             while (true)
             {
                 Console.Clear();
-                Dysplay(todoList.todoItems);
+                await Dysplay(todoList.todoItems);
                 InputTask(todoList);
             }
         }
 
-        public static void Dysplay(List<TodoItem> todoItemResult)
+        public static async Task Dysplay(List<TodoItem> todoItemResult)
         {
             Console.WriteLine("----------\nЗаметки :D\n----------");
             Console.WriteLine("Задачи:");
             foreach (var item in todoItemResult)
             {
-                item.Display();
+                await item.Display();
             }
             Console.WriteLine("------------------------");
         }
 
-        private static void InputTask(TodoList todoList)
+        private static async Task InputTask(TodoList todoList)
         {
             //if(!isCreate && !isRemove && !isEdit)
             //{
-                Console.WriteLine($"Редактировать задачу(Id) | Добавить задачу(a) | Удалить задачу (r) | Выйти из программы: Ctrl+C");
+                Console.WriteLine($"Редактировать задачу(Id) | Добавить задачу(a) | Удалить задачу (r) | Сортировать по приоритету (s) | Выйти из программы: Ctrl+C");
                 string input = FunctionInput.AskString();
 
                 if (int.TryParse(input, out int id))
@@ -37,7 +37,8 @@ namespace InputRepository
                     var task = todoList.todoItems.FindLast(x => x.Id == id);
                     if(task != null)
                     {
-                        todoList.todoItems.FindLast(x => x.Id == id).Edit();
+                        var taskEdit = todoList.todoItems.FindLast(x => x.Id == id);
+                        await taskEdit.Edit();
                     }
                     else Console.WriteLine("Ошибка: Задачи с таким номером не существует!");
                 }
@@ -69,16 +70,14 @@ namespace InputRepository
                         int idTask = FunctionInput.AskNumber("Попробуйте ещё раз!", maxIndex);
                         todoList.RemoveTask(todoList.todoItems.FindLast(x => x.Id == idTask));
                         return;
+                    case "s":
+                        todoList.todoItems = todoList.Filter(x => x.PriorityStatus == Priority.Middle);
+                        return;
                     default: Console.WriteLine("Неизвестная команда"); break;
                 }
 }
             //}
         }
-
-
-        private static bool isEdit = false;
-        private static bool isCreate = false;
-        private static bool isRemove = false;
     }
 
         

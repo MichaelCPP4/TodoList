@@ -27,7 +27,7 @@ class Program
         return listTask;
     }
 
-    public static void Main()
+    public static async Task Main()
     {   
         var program = new Program();
 
@@ -40,6 +40,6 @@ class Program
         todoList.todoItems.Add(new TimedTask(5,"Оплатить студию", "Аренда за ноябрь", Priority.High, DateTime.Now.AddDays(2)));
         todoList.todoItems.Add(new RecurringTask(6,"Уборка репбазы", "Смахнуть пыль с комбиков", Priority.Light, DayOfWeek.Monday));
 
-        DisplayOperation.Run(todoList);
+        await DisplayOperation.Run(todoList);
     }
 }
