@@ -10,7 +10,7 @@ namespace InputRepository
             {
                 Console.Clear();
                 await Dysplay(todoList.todoItems);
-                InputTask(todoList);
+                await InputTask(todoList);
             }
         }
 
@@ -29,8 +29,8 @@ namespace InputRepository
         {
             //if(!isCreate && !isRemove && !isEdit)
             //{
-                Console.WriteLine($"Редактировать задачу(Id) | Добавить задачу(a) | Удалить задачу (r) | Сортировать по приоритету (s) | Выйти из программы: Ctrl+C");
-                string input = FunctionInput.AskString();
+                Console.WriteLine($"Редактировать задачу(Id) | Добавить задачу(a) | Удалить задачу (d) | Сортировать по приоритету (t) | Сохранить лист (s) | Загрузить лист (r) | Выйти из программы: Ctrl+C");
+                string input = await FunctionInput.AskString();
 
                 if (int.TryParse(input, out int id))
                 {
@@ -64,15 +64,32 @@ namespace InputRepository
                                 return;
                         }
                     break;
-                    case "r":
+                    case "d":
                         Console.WriteLine("Выберите номер задачи для удаления: ");
                         int maxIndex = todoList.todoItems.OrderByDescending(x => x.Id).First().Id;
                         int idTask = FunctionInput.AskNumber("Попробуйте ещё раз!", maxIndex);
                         todoList.RemoveTask(todoList.todoItems.FindLast(x => x.Id == idTask));
                         return;
-                    case "s":
+                    case "t":
                         todoList.todoItems = todoList.Filter(x => x.PriorityStatus == Priority.Middle);
                         return;
+                    case "s":
+                        Console.WriteLine("Введите название для файла: ");
+                        if(await todoList.SaveTodoList(await FunctionInput.AskString()))
+                            Console.WriteLine("Файл сохранён!");
+                    return;
+                    case "r":
+                        Console.WriteLine("Введите название файла: ");
+                        if(await todoList.LoadTodoList(await FunctionInput.AskString()))
+                        {
+                            Console.WriteLine("Файл открыт успешно!");
+                            await Task.Delay(1000);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Не удалось открыть файл!");
+                        }
+                    return;
                     default: Console.WriteLine("Неизвестная команда"); break;
                 }
 }

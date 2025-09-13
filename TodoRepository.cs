@@ -3,7 +3,10 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
 using Microsoft.VisualBasic;
+using Newtonsoft.Json;
+
 
 namespace TodoRepository
 {
@@ -41,7 +44,7 @@ namespace TodoRepository
 
         public static async Task LoadTaskAsync()
         {
-            await Task.Delay(1000);
+            await Task.Delay(500);
         }
 
         public static DateTime AskDate()
@@ -63,7 +66,7 @@ namespace TodoRepository
         }
 }
 
-        public static string AskString()
+        public static async Task<string> AskString()
         {
         string input;
 
@@ -166,14 +169,14 @@ namespace TodoRepository
 
         public virtual async Task Edit()
         {
-            await FunctionInput.SaveTasksAsync();
             Console.WriteLine("Введите название: ");
-            Title = FunctionInput.AskString();
+            Title = await FunctionInput.AskString();
             Console.WriteLine("Выберите приоритет (1-4): ");
             Console.WriteLine("1) Низкий\n2) Обычный\n3) Высокий\n4) Очень высокий");
             PriorityStatus = FunctionInput.PrioritySwitcher(FunctionInput.AskNumber("Попробуйте ещё раз!", 4));
             Console.WriteLine("Введите описание: ");
-            Description = FunctionInput.AskString();
+            Description = await FunctionInput.AskString();
+            await FunctionInput.SaveTasksAsync();
         }
     }
 
@@ -181,6 +184,7 @@ namespace TodoRepository
     {
         public SimpleTask() { Title = "Дельце"; }
 
+        [JsonConstructor]
         public SimpleTask(int id, string title, string description, Priority priority)
         {
             Id = id;
@@ -210,6 +214,7 @@ namespace TodoRepository
             Console.WriteLine($"№{Id}\nНазвание: {Title}\nПриоритет: {PriorityStatus}\nОписание:\n{Description}");
         }
 
+        [JsonConstructor]
         public RecurringTask(int id, string title, string description, Priority priority, DayOfWeek day)
         {
             Id = id;
@@ -236,7 +241,7 @@ namespace TodoRepository
         public override async Task Edit()
         {
             await FunctionInput.SaveTasksAsync();
-            base.Edit();
+            await base.Edit();
             Console.WriteLine("Выберите день недели (1-7): ");
             Console.WriteLine("1) Понедельник\n2) Вторник\n3) Среда\n4) Четверг\n5) Пятница\n6) Суббота\n7) Воскресенье");
             Day = FunctionInput.DaySwitcher(FunctionInput.AskNumber("Попробуй ещё раз!", 7));
@@ -248,6 +253,7 @@ namespace TodoRepository
     {
         public TimedTask(DateTime dateTime) { Title = "Срочное"; this.dateTime = dateTime; }
 
+        [JsonConstructor]
         public TimedTask(int id, string title, string description, Priority priority, DateTime dateTime)
         {
             Id = id;
@@ -304,26 +310,26 @@ namespace TodoRepository
 
     public class TodoList
     {
-        public void CreateSimpleTask()
+        public async void CreateSimpleTask()
         {
             int id = GenerateIdTask();
             Console.WriteLine("Введите название: ");
-            string title = FunctionInput.AskString();
+            string title = await FunctionInput.AskString();
             Console.WriteLine("Введите описание:");
-            string description = FunctionInput.AskString();
+            string description = await FunctionInput.AskString();
             Console.WriteLine("Выберите приоритет: ");
             Console.WriteLine("1) Низкий\n2) Обычный\n3) Высокий\n4) Очень высокий");
             Priority priority = FunctionInput.PrioritySwitcher(FunctionInput.AskNumber("Попробуй ещё раз!", 4));
             todoItems.Add(new SimpleTask(id, title, description, priority));
         }
 
-        public void CreateTimedTask()
+        public async void CreateTimedTask()
         {
             int id = GenerateIdTask();
             Console.WriteLine("Введите название: ");
-            string title = FunctionInput.AskString();
+            string title = await FunctionInput.AskString();
             Console.WriteLine("Введите описание:");
-            string description = FunctionInput.AskString();
+            string description = await FunctionInput.AskString();
             Console.WriteLine("Выберите приоритет: ");
             Console.WriteLine("1) Низкий\n2) Обычный\n3) Высокий\n4) Очень высокий");
             Priority priority = FunctionInput.PrioritySwitcher(FunctionInput.AskNumber("Попробуй ещё раз!", 4));
@@ -332,13 +338,13 @@ namespace TodoRepository
             todoItems.Add(new TimedTask(id, title, description, priority, dateTime));
         }
 
-        public void CreateRecurringTask()
+        public async void CreateRecurringTask()
         {
             int id = GenerateIdTask();
             Console.WriteLine("Введите название: ");
-            string title = FunctionInput.AskString();
+            string title = await FunctionInput.AskString();
             Console.WriteLine("Введите описание:");
-            string description = FunctionInput.AskString();
+            string description = await FunctionInput.AskString();
             Console.WriteLine("Выберите приоритет: ");
             Console.WriteLine("1) Низкий\n2) Обычный\n3) Высокий\n4) Очень высокий");
             Priority priority = FunctionInput.PrioritySwitcher(FunctionInput.AskNumber("Попробуй ещё раз!", 4));
@@ -402,9 +408,34 @@ namespace TodoRepository
             return todoItems.Where(condition).ToList();
         }
         
+        public async Task<bool> SaveTodoList(string fileName)
+        {
+            //var memotyStream = new MemoryStream();
+            string json = JsonConvert.SerializeObject(todoItems, Formatting.Indented, 
+            new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            });
+            await File.WriteAllTextAsync(fileName + ".json", json);
+            return true;
+        }
 
+        public async Task<bool> LoadTodoList(string fileName)
+        {
+            //if (!File.Exists(fileName)) 
+                //return false;
 
+            string json = await File.ReadAllTextAsync(fileName + ".json");
+            //todoItems = JsonSerializer.Deserialize<List<TodoItem>>(json);
 
+            todoItems = JsonConvert.DeserializeObject<List<TodoItem>>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All,
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+            });
+
+            return true;
+        }
 
 
 

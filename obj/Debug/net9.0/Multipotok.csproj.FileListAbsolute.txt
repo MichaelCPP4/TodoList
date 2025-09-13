@@ -13,3 +13,6 @@
 /home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/Multipotok.genruntimeconfig.cache
 /home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/ref/Multipotok.dll
 /home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/Multipotok.sourcelink.json
+/home/michael/Documents/Project/Multipotok/bin/Debug/net9.0/Newtonsoft.Json.dll
+/home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/Multipotok.csproj.AssemblyReference.cache
+/home/michael/Documents/Project/Multipotok/obj/Debug/net9.0/Multipotok.csproj.Up2Date

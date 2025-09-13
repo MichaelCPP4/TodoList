@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "jTknFWR56Sg=",
+  "dgSpecHash": "LTrXFUYJ1LI=",
   "success": true,
   "projectFilePath": "/home/michael/Documents/Project/Multipotok/Multipotok.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/home/michael/.nuget/packages/newtonsoft.json/13.0.3/newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
   "logs": []
 }

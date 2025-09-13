@@ -1,0 +1,13 @@
+{
+  "$type": "System.Collections.Generic.List`1[[TodoRepository.TodoItem, Multipotok]], System.Private.CoreLib",
+  "$values": [
+    {
+      "$type": "TodoRepository.SimpleTask, Multipotok",
+      "Id": 1,
+      "Title": "Нарисовать обложку",
+      "Description": "Ч/б череп + молния",
+      "PriorityStatus": 0,
+      "IsCompleted": false
+    }
+  ]
+}
